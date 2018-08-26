@@ -1,5 +1,5 @@
 # bamazon-node-mySQL-app
 
-bamazonCustomer Demo Video: https://www.youtube.com/watch?v=nSGPmxeCcNI
+Bamazon Customer Demo Video: https://www.youtube.com/watch?v=nSGPmxeCcNI
 
-baazonManager Demo Video: https://www.youtube.com/watch?v=Vi7KIN7OYVk
+Bamazon Manager Demo Video: https://www.youtube.com/watch?v=Vi7KIN7OYVk
