@@ -1,0 +1,25 @@
+DROP DATABASE IF EXISTS bamazon_db;
+
+CREATE DATABASE bamazon_db;
+
+USE bamazon_db;
+
+CREATE TABLE products (
+	item_id INT AUTO_INCREMENT,
+	product_name VARCHAR(50) NOT NULL,
+	department_name VARCHAR(25),
+	price DECIMAL(4,2),
+	stock_quantity INTEGER(25),
+	min_stock_threshold INTEGER(25),
+	PRIMARY KEY(item_id)
+);
+
+INSERT INTO products (product_name, department_name, price, stock_quantity, min_stock_threshold)
+VALUES
+	('Preworkout_Powder_16oz', 'health', 27.99, 1000, 100),
+	('Creatine', 'health', 24.99, 500, 50),
+	('Protein_Whey_60oz', 'health', 32.99, 1000, 100),
+	('BCAA_Powder_32oz', 'health', 27.99, 500, 50),
+	('Blender_Bottle_12oz', 'kitchen', 12.99, 250, 25),
+	('Crockpot', 'kitchen', 49.99, 25, 10),
+	('RX_Bar_6pk', 'grocery', 12.99, 100, 25);
