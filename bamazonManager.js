@@ -17,42 +17,41 @@ var connection = mySQL.createConnection({
     database: "bamazon_db"
 });
 
-// verify connection to the mysql server and sql database
-connection.connect(function (err) {
-    if (err) throw err;
-    console.log('\nWelcome to Bamazon!\n');
-    start();
-});
-
+// functions
+// function to display the manager's options
 function start() {
     inquirer
         .prompt({
             name: "managerOptions",
             type: "rawlist",
             message: "Please select a choice below".blue,
-            choices: ["VIEW ALL PRODUCTS", "VIEW LOW INVENTORY", "ADJUST INVENOTRY LEVELS", "ADD NEW PRODUCT"]
+            choices: ["VIEW ALL PRODUCTS", "VIEW LOW INVENTORY", "ADJUST INVENTORY LEVELS", "ADD NEW PRODUCT", "QUIT"]
         })
         .then(function (answer) {
             switch (answer.managerOptions.toUpperCase()) {
                 case "VIEW ALL PRODUCTS":
-                    viewAllProdcuts();
+                    viewAllProducts();
                     break;
 
                 case "VIEW LOW INVENTORY":
                     viewLowInventory();
                     break;
 
-                case "ADJUST INVENOTRY LEVELS":
+                case "ADJUST INVENTORY LEVELS":
                     adjustInventoryLevels();
                     break;
 
                 case "ADD NEW PRODUCT":
                     addNewProduct();
+                    break;
+                case "QUIT":
+                    end();
             }
         });
 }
 
-function viewAllProdcuts() {
+// function to view a list of current inventory items
+function viewAllProducts() {
     connection.query("SELECT * from products", function (err, results) {
         if (err) throw err;
         for (var i = 0; i < results.length; i++) {
@@ -63,6 +62,7 @@ function viewAllProdcuts() {
     });
 }
 
+// function to view all inventtory items with stock levels below the minimum threshold quantity (threshold is set in the mySQL database)
 function viewLowInventory() {
     connection.query("SELECT * from products", function (err, results) {
         if (err) throw err;
@@ -83,14 +83,15 @@ function viewLowInventory() {
     });
 }
 
+// function to determine which item the manager wishes to adjust stock levels
 function adjustInventoryLevels() {
     connection.query("SELECT * from products", function (err, results) {
         inquirer
             .prompt({
-                name: "itemID",
-                type: "input",
-                message: "Enter the Item ID for the item quantity you wish to modify".blue,
-            })
+            name: "itemID",
+            type: "input",
+            message: "Enter the Item ID for the item quantity you wish to modify".blue,
+        })
             .then(function (answer) {
                 selectedItemID = parseInt(answer.itemID)
                 connection.query("SELECT * from products WHERE item_id = ?", [selectedItemID], function (err, results) {
@@ -103,6 +104,7 @@ function adjustInventoryLevels() {
     });
 }
 
+// function to increase or decrease stock levels for an item
 function updateQuantity() {
     inquirer
         .prompt({
@@ -118,6 +120,7 @@ function updateQuantity() {
         });
 }
 
+// function to add a new prodct to the mySQL database
 function addNewProduct() {
     inquirer
         .prompt([
@@ -172,30 +175,31 @@ function addNewProduct() {
             var price = parseInt(answer.price);
             var stockQuantity = parseInt(answer.stockQuantity);
             var minStockThreshold = parseInt(answer.minStockThreshold);
-            connection.query( "INSERT INTO products SET ?",
-            {
-              product_name: productName,
-              department_name: departmentName,
-              price: price,
-              stock_quantity: stockQuantity,
-              min_stock_threshold: minStockThreshold
-            }),
-            console.log("Item added:"  + "Product Name: " + productName + " | " + "Department Name: " + departmentName + " | " + "Price: " + price + " | " + "Available Stock: " + stockQuantity + " | " + " Min Stock Threshold: " + minStockThreshold + "]");
+            connection.query("INSERT INTO products SET ?",
+                {
+                    product_name: productName,
+                    department_name: departmentName,
+                    price: price,
+                    stock_quantity: stockQuantity,
+                    min_stock_threshold: minStockThreshold
+                }),
+                console.log("Item added:" + "Product Name: " + productName + " | " + "Department Name: " + departmentName + " | " + "Price: " + price + " | " + "Available Stock: " + stockQuantity + " | " + " Min Stock Threshold: " + minStockThreshold + "]");
             console.log("\n");
             end();
         });
 }
 
+// function to allow the manager to perform another action or quit the appliaction
 function end() {
     inquirer
         .prompt({
             name: "end",
             type: "rawlist",
-            message: "Would you like to [PREFORM ANOTHER ACTION] or [EXIT] Bamazon?".blue,
-            choices: ["PREFORM ANOTHER ACTION", "EXIT"]
+            message: "Would you like to [PERFORM ANOTHER ACTION] or [EXIT] Bamazon?".blue,
+            choices: ["PERFORM ANOTHER ACTION", "EXIT"]
         })
         .then(function (answer) {
-            if (answer.end.toUpperCase() === "PREFORM ANOTHER ACTION") {
+            if (answer.end.toUpperCase() === "PERFORM ANOTHER ACTION") {
                 start();
             }
             else {
@@ -204,3 +208,12 @@ function end() {
             }
         });
 }
+
+// logic
+// verify connection to the mysql server and sql database
+connection.connect(function (err) {
+    if (err) throw err;
+    console.log('\nWelcome to Bamazon!\n');
+    //run the start function to begin the manager's application
+    start();
+});

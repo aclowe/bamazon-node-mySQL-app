@@ -23,13 +23,8 @@ var connection = mySQL.createConnection({
     database: "bamazon_db"
 });
 
-// verify connection to the mysql server and sql database
-connection.connect(function (err) {
-    if (err) throw err;
-    console.log("\nWelcome to Bamazon! Here's what we got!\n");
-    start();
-});
-
+// functions
+// function to view all products for sale
 function start() {
     connection.query("SELECT * from products", function (err, results) {
         if (err) throw err;
@@ -42,28 +37,11 @@ function start() {
     
 }
 
-function end() {
-    inquirer
-    .prompt({
-      name: "end",
-      type: "rawlist",
-      message: "Would you like to [PURCHASE ANOTHER ITEM] or [EXIT] Bamazon?".blue,
-      choices: ["PURCHASE ANOTHER ITEM", "EXIT"]
-    })
-    .then(function(answer) {
-      if (answer.end.toUpperCase() === "PURCHASE ANOTHER ITEM") {
-        start();
-      }
-      else {
-        console.log("Thanks for shopping with Bamazon!");
-        connection.end();
-      }
-    });
-    }
-
+// function to allow customer to pruchase item
 function purchaseItem() {
     inquirer
         .prompt([
+            // get the item ID of the item customer wishes to purchase
             {
                 name: "selectedItemID",
                 type: "input",
@@ -75,6 +53,7 @@ function purchaseItem() {
                     return false;
                 }
             },
+            // get the quantity of the item the customer wishes to purchase
             {
                 name: "purchaseQuantity",
                 type: "input",
@@ -88,7 +67,7 @@ function purchaseItem() {
             }
         ])
         .then(function (answer) {
-            // get the information of the chosen item
+            // store the item ID and requested quanitty of the item chosen by the customer
             selectedItemID = parseInt(answer.selectedItemID);
             selectedQuantity = parseInt(answer.purchaseQuantity);
             //query db to return item info
@@ -113,3 +92,30 @@ function purchaseItem() {
             });
         });
 }
+
+function end() {
+    inquirer
+    .prompt({
+      name: "end",
+      type: "rawlist",
+      message: "Would you like to [PURCHASE ANOTHER ITEM] or [EXIT] Bamazon?".blue,
+      choices: ["PURCHASE ANOTHER ITEM", "EXIT"]
+    })
+    .then(function(answer) {
+      if (answer.end.toUpperCase() === "PURCHASE ANOTHER ITEM") {
+        start();
+      }
+      else {
+        console.log("Thanks for shopping with Bamazon!");
+        connection.end();
+      }
+    });
+    }
+
+//logic
+// verify connection to the mysql server and sql database
+connection.connect(function (err) {
+    if (err) throw err;
+    console.log("\nWelcome to Bamazon! Here's what we got!\n");
+    start();
+});
